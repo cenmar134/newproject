@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Question</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ffe6e6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            z-index: 10;
+            transition: all 0.5s ease;
+        }
+
+        h1 {
+            color: #ff4d6d;
+            font-size: 24px;
+            margin-bottom: 30px;
+            min-height: 60px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            height: 50px;
+            position: relative;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .yes-btn {
+            background-color: #ff4d6d;
+            color: white;
+        }
+
+        .yes-btn:hover {
+            background-color: #ff758f;
+            transform: scale(1.1);
+        }
+
+        .no-btn {
+            background-color: #6c757d;
+            color: white;
+            position: absolute;
+        }
+
+        /* Anime Style Floating Hearts */
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            color: #ff4d6d;
+            animation: float Up 4s linear infinite;
+            opacity: 0;
+            bottom: -50px;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card" id="card">
+        <h1 id="question">Would you like to go on a date with me?</h1>
+        <div class="btn-container" id="btnContainer">
+            <button class="yes-btn" id="yesBtn" onclick="nextQuestion()">Yes</button>
+            <button class="no-btn" id="noBtn" onmouseover="moveNoButton()">No</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const questionText = document.getElementById('question');
+        const btnContainer = document.getElementById('btnContainer');
+
+        // Initial setup for No button position inside container bounds
+        resetNoButton();
+
+        function moveNoButton() {
+            if (currentStep === 1) {
+                // Run away logic for Question 1
+                const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+                const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+                
+                noBtn.style.position = 'fixed';
+                noBtn.style.left = x + 'px';
+                noBtn.style.top = y + 'px';
+            }
+        }
+
+        function resetNoButton() {
+            noBtn.style.position = 'absolute';
+            noBtn.style.right = '20px';
+            noBtn.style.top = '0px';
+            noBtn.style.left = 'auto';
+        }
+
+        function nextQuestion() {
+            if (currentStep === 1) {
+                currentStep = 2;
+                resetNoButton();
+                
+                // Trigger quick card animation
+                document.getElementById('card').style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    questionText.innerText = "Are you absolutely sure? There's no turning back! 😉";
+                    document.getElementById('card').style.transform = 'scale(1)';
+                    
+                    // For question 2, change No button behavior to make it hard to click
+                    noBtn.onmouseover = function() {
+                        // Grows the yes button instead of running away
+                        let currentScale = yesBtn.style.transform ? parseFloat(yesBtn.style.transform.replace('scale(', '')) : 1;
+                        yesBtn.style.transform = `scale(${currentScale + 0.3})`;
+                        
+                        // Shrinks the no button
+                        let noScale = noBtn.style.transform ? parseFloat(noBtn.style.transform.replace('scale(', '')) : 1;
+                        if (noScale > 0.4) noBtn.style.transform = `scale(${noScale - 0.1})`;
+                    };
+                }, 200);
+
+            } else if (currentStep === 2) {
+                // Final Success State
+                questionText.innerText = "Yay! It's a date! See you soon! ❤️✨";
+                btnContainer.style.display = 'none';
+                startHeartRain();
+            }
+        }
+
+        function startHeartRain() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerText = ['❤️', '💖', '✨', '🌸'][Math.floor(Math.random() * 4)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                document.body.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 4000);
+            }, 100);
+        }
+    </script>
+</body>
+</html>
